@@ -100,29 +100,19 @@ With no ARGUMENT, list the directory history in ascending rank.
 }
 
 # Load zsh/datetime module, if necessary
-(( ${+EPOCHSECONDS} )) || zmodload zsh/datetime
+(( $+EPOCHSECONDS )) || zmodload zsh/datetime
+
+# Load zsh/files, if necessary
+[[ ${builtins[zf_chown]} == 'defined' &&
+   ${builtins[zf_mv]}    == 'defined' &&
+   ${builtins[zf_rm]}    == 'defined' ]] ||
+  zmodload -F zsh/files b:zf_chown b:zf_mv b:zf_rm
+
+# Load zsh/system, if necessary
+[[ ${modules[zsh/system]} == 'loaded' ]] || zmodload zsh/system &> /dev/null
 
 # Global associative array for internal use
 typeset -gA ZSHZ
-
-# Fallback utilities in case Zsh lacks zsh/files (as is the case with MobaXterm)
-ZSHZ[CHOWN]='chown'
-ZSHZ[MV]='mv'
-ZSHZ[RM]='rm'
-# Try to load zsh/files utilities
-if [[ ${builtins[zf_chown]-} != 'defined' ||
-      ${builtins[zf_mv]-}    != 'defined' ||
-      ${builtins[zf_rm]-}    != 'defined' ]]; then
-  zmodload -F zsh/files b:zf_chown b:zf_mv b:zf_rm &> /dev/null
-fi
-# Use zsh/files, if it is available
-[[ ${builtins[zf_chown]-} == 'defined' ]] && ZSHZ[CHOWN]='zf_chown'
-[[ ${builtins[zf_mv]-} == 'defined' ]] && ZSHZ[MV]='zf_mv'
-[[ ${builtins[zf_rm]-} == 'defined' ]] && ZSHZ[RM]='zf_rm'
-
-
-# Load zsh/system, if necessary
-[[ ${modules[zsh/system]-} == 'loaded' ]] || zmodload zsh/system &> /dev/null
 
 # Make sure ZSHZ_EXCLUDE_DIRS has been declared so that other scripts can
 # simply append to it
@@ -155,7 +145,7 @@ is-at-least 5.3.0 && ZSHZ[PRINTV]=1
 zshz() {
 
   # Don't use `emulate -L zsh' - it breaks PUSHD_IGNORE_DUPS
-  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT EXTENDED_GLOB UNSET
+  setopt LOCAL_OPTIONS NO_KSH_ARRAYS NO_SH_WORD_SPLIT EXTENDED_GLOB
   (( ZSHZ_DEBUG )) && setopt LOCAL_OPTIONS WARN_CREATE_GLOBAL
 
   local REPLY
@@ -287,7 +277,7 @@ zshz() {
 
     if (( ret != 0 )); then
       # Avoid clobbering the datafile if the write to tempfile failed
-      ${ZSHZ[RM]} -f "$tempfile"
+      zf_rm -f "$tempfile"
       return $ret
     fi
 
@@ -295,17 +285,16 @@ zshz() {
     owner=${ZSHZ_OWNER:-${_Z_OWNER}}
 
     if (( ZSHZ[USE_FLOCK] )); then
-      ${ZSHZ[MV]} "$tempfile" "$datafile" 2> /dev/null || ${ZSHZ[RM]} -f "$tempfile"
+      zf_mv "$tempfile" "$datafile" 2> /dev/null || zf_rm -f "$tempfile"
 
       if [[ -n $owner ]]; then
-        ${ZSHZ[CHOWN]} ${owner}:"$(id -ng ${owner})" "$datafile"
+        zf_chown ${owner}:"$(id -ng ${owner})" "$datafile"
       fi
     else
       if [[ -n $owner ]]; then
-        ${ZSHZ[CHOWN]} "${owner}":"$(id -ng "${owner}")" "$tempfile"
+        zf_chown "${owner}":"$(id -ng "${owner}")" "$tempfile"
       fi
-      ${ZSHZ[MV]} -f "$tempfile" "$datafile" 2> /dev/null ||
-          ${ZSHZ[RM]} -f "$tempfile"
+      zf_mv -f "$tempfile" "$datafile" 2> /dev/null || zf_rm -f "$tempfile"
     fi
 
     # In order to make z -x work, we have to disable zsh-z's adding
@@ -317,7 +306,7 @@ zshz() {
   }
 
   ############################################################
-  # Read the current datafile contents, update them, "age" them
+  # Read the curent datafile contents, update them, "age" them
   # when the total rank gets high enough, and print the new
   # contents to STDOUT.
   #
@@ -895,9 +884,6 @@ alias ${ZSHZ_CMD:-${_Z_CMD:-z}}='zshz 2>&1'
 #   ZSHZ
 ############################################################
 _zshz_precmd() {
-  # Protect against `setopt NO_UNSET'
-  setopt LOCAL_OPTIONS UNSET
-
   # Do not add PWD to datafile when in HOME directory, or
   # if `z -x' has just been run
   [[ $PWD == "$HOME" ]] || (( ZSHZ[DIRECTORY_REMOVED] )) && return
@@ -945,7 +931,7 @@ add-zsh-hook chpwd _zshz_chpwd
 # Completion
 ############################################################
 
-# Standardized $0 handling
+# Standarized $0 handling
 # https://zdharma-continuum.github.io/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
@@ -972,7 +958,7 @@ ZSHZ[FUNCTIONS]='_zshz_usage
 # Enable WARN_NESTED_VAR for functions listed in
 #   ZSHZ[FUNCTIONS]
 ############################################################
-(( ${+ZSHZ_DEBUG} )) && () {
+(( ZSHZ_DEBUG )) && () {
   if is-at-least 5.4.0; then
     local x
     for x in ${=ZSHZ[FUNCTIONS]}; do

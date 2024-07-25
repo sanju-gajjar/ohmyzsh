@@ -1,13 +1,13 @@
-if (( ! $+commands[minikube] )); then
-  return
-fi
+# Autocompletion for Minikube.
+#
+if (( $+commands[minikube] )); then
+    __MINIKUBE_COMPLETION_FILE="${ZSH_CACHE_DIR}/minikube_completion"
 
-# If the completion file doesn't exist yet, we need to autoload it and
-# bind it to `minikube`. Otherwise, compinit will have already done that.
-if [[ ! -f "$ZSH_CACHE_DIR/completions/_minikube" ]]; then
-  typeset -g -A _comps
-  autoload -Uz _minikube
-  _comps[minikube]=_minikube
-fi
+    if [[ ! -f $__MINIKUBE_COMPLETION_FILE ]]; then
+        minikube completion zsh >! $__MINIKUBE_COMPLETION_FILE
+    fi
 
-minikube completion zsh >| "$ZSH_CACHE_DIR/completions/_minikube" &|
+    [[ -f $__MINIKUBE_COMPLETION_FILE ]] && source $__MINIKUBE_COMPLETION_FILE
+
+    unset __MINIKUBE_COMPLETION_FILE
+fi

@@ -241,18 +241,10 @@ function _omz::plugin::disable {
 
   # Remove plugins substitution awk script
   local awk_subst_plugins="\
-  gsub(/[ \t]+(${(j:|:)dis_plugins})[ \t]+/, \" \") # with spaces before or after
-  gsub(/[ \t]+(${(j:|:)dis_plugins})$/, \"\")       # with spaces before and EOL
-  gsub(/^(${(j:|:)dis_plugins})[ \t]+/, \"\")       # with BOL and spaces after
-
-  gsub(/\((${(j:|:)dis_plugins})[ \t]+/, \"(\")     # with parenthesis before and spaces after
-  gsub(/[ \t]+(${(j:|:)dis_plugins})\)/, \")\")     # with spaces before or parenthesis after
-  gsub(/\((${(j:|:)dis_plugins})\)/, \"()\")        # with only parentheses
-
-  gsub(/^(${(j:|:)dis_plugins})\)/, \")\")          # with BOL and closing parenthesis
-  gsub(/\((${(j:|:)dis_plugins})$/, \"(\")          # with opening parenthesis and EOL
+  gsub(/[ \t]+(${(j:|:)dis_plugins})/, \"\") # with spaces before
+  gsub(/(${(j:|:)dis_plugins})[ \t]+/, \"\") # with spaces after
+  gsub(/\((${(j:|:)dis_plugins})\)/, \"\") # without spaces (only plugin)
 "
-
   # Disable plugins awk script
   local awk_script="
 # if plugins=() is in oneline form, substitute disabled plugins and go to next line
@@ -456,7 +448,7 @@ function _omz::plugin::load {
     if [[ ! -f "$base/_$plugin" && ! -f "$base/$plugin.plugin.zsh" ]]; then
       _omz::log warn "'$plugin' is not a valid plugin"
       continue
-    # It is a valid plugin, add its directory to $fpath unless it is already there
+    # It it is a valid plugin, add its directory to $fpath unless it is already there
     elif (( ! ${fpath[(Ie)$base]} )); then
       fpath=("$base" $fpath)
     fi
@@ -781,17 +773,7 @@ function _omz::theme::use {
 }
 
 function _omz::update {
-  # Check if git command is available
-  (( $+commands[git] )) || {
-    _omz::log error "git is not installed. Aborting..."
-    return 1
-  }
-
-  local last_commit=$(builtin cd -q "$ZSH"; git rev-parse HEAD 2>/dev/null)
-  [[ $? -eq 0 ]] || {
-    _omz::log error "\`$ZSH\` is not a git directory. Aborting..."
-    return 1
-  }
+  local last_commit=$(builtin cd -q "$ZSH"; git rev-parse HEAD)
 
   # Run update script
   zstyle -s ':omz:update' verbose verbose_mode || verbose_mode=default

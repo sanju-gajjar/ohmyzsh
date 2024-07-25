@@ -6,7 +6,7 @@ function gradle-or-gradlew() {
   # taken from https://github.com/gradle/gradle-completion
   local dir="$PWD" project_root="$PWD"
   while [[ "$dir" != / ]]; do
-    if [[ -x "$dir/gradlew" ]]; then
+    if [[ -f "$dir/settings.gradle" || -f "$dir/settings.gradle.kts" || -f "$dir/gradlew" ]]; then
       project_root="$dir"
       break
     fi

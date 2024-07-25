@@ -21,6 +21,7 @@ plugins=(... ansible)
 | `acon`                                     | command `ansible-console`                                           |
 | `ainv`                                     | command `ansible-inventory`                                         |
 | `aplaybook`                                | command `ansible-playbook`                                          |
+| `ainv`                                     | command `ansible-inventory`                                         |
 | `adoc`                                     | command `ansible-doc`                                               |
 | `agal`                                     | command `ansible-galaxy`                                            |
 | `apull`                                    | command `ansible-pull`                                              |
@@ -28,6 +29,6 @@ plugins=(... ansible)
 
 ## Maintainer
 
-### [Deepankumar](https://github.com/deepan10)
+### [Deepankumar](https://github.com/deepan10) 
 
 [https://github.com/deepan10/oh-my-zsh/tree/features/ansible-plugin](https://github.com/deepan10/oh-my-zsh/tree/features/ansible-plugin)

@@ -13,12 +13,7 @@ plugins=(... debian)
 - `$apt_pref`: use aptitude or apt if installed, fallback is apt-get.
 - `$apt_upgr`: use upgrade or safe-upgrade (for aptitude).
 
-Set **both** `$apt_pref` and `$apt_upgr` to whatever command you want (before sourcing Oh My Zsh) to override this behavior, e.g.:
-
-```sh
-apt_pref='apt'
-apt_upgr='full-upgrade'
-```
+Set `$apt_pref` and `$apt_upgr` to whatever command you want (before sourcing Oh My Zsh) to override this behavior.
 
 ## Common Aliases
 

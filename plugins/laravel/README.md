@@ -10,7 +10,6 @@ plugins=(... laravel)
 |:-:|:-:|
 | `artisan`  | `php artisan`  |
 | `pas`  | `php artisan serve` |
-| `pats`  | `php artisan test` |
 
 ## Database
 
@@ -36,10 +35,6 @@ plugins=(... laravel)
 | `pamj`  |  `php artisan make:job` |
 | `paml`  |  `php artisan make:listener` |
 | `pamn`  |  `php artisan make:notification` |
-| `pamcl` | `php artisan make:class` |
-| `pamen` | `php artisan make:enum` |
-| `pami`  | `php artisan make:interface` |
-| `pamtr` | `php artisan make:trait` |
 
 ## Clears
 

@@ -4,7 +4,6 @@ alias bob='php artisan bob::build'
 
 # Development
 alias pas='php artisan serve'
-alias pats='php artisan test'
 
 # Database
 alias pam='php artisan migrate'
@@ -25,10 +24,6 @@ alias pamj='php artisan make:job'
 alias paml='php artisan make:listener'
 alias pamn='php artisan make:notification'
 alias pampp='php artisan make:provider'
-alias pamcl='php artisan make:class'
-alias pamen='php artisan make:enum'
-alias pami='php artisan make:interface'
-alias pamtr='php artisan make:trait'
 
 
 # Clears
