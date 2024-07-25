@@ -54,7 +54,7 @@ if [[ "$OSTYPE" = darwin* ]]; then
       fi
       echo "%{$fg[$color]%}[${battery_pct}%%]%{$reset_color%}"
     else
-      echo "∞"
+      echo "${BATTERY_CHARGING-⚡️}"
     fi
   }
 

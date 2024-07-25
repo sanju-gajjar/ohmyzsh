@@ -31,6 +31,18 @@ fi
 : ${ZSH_TMUX_UNICODE:=false}
 
 # ALIASES
+<<<<<<< HEAD
+=======
+function _build_tmux_alias {
+  setopt localoptions no_rc_expand_param
+  eval "function $1 {
+    if [[ -z \$1 ]] || [[ \${1:0:1} == '-' ]]; then
+      tmux $2 \"\$@\"
+    else
+      tmux $2 $3 \"\$@\"
+    fi
+  }"
+>>>>>>> origin
 
 alias ta='tmux attach -t'
 alias tad='tmux attach -d -t'
